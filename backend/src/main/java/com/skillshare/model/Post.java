@@ -1,4 +1,4 @@
-package com.agriapp.model;
+package com.skillshare.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -6,22 +6,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
-@Document(collection = "comments")
-public class Comment {
+@Document(collection = "posts")
+public class Post {
     @Id
     private String id;
     private String userId;
+    private String title;
     private String content;
-    private String referenceType; // post, learningPath, or learningProgress
-    private String referenceId;
-    private String parentCommentId; // for replies, null if top-level comment
+    private List<String> mediaUrls = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int likes = 0;
-    private List<String> mediaUrls = new ArrayList<>();
+    private int shares = 0;
+    private List<Comment> comments = new ArrayList<>();
     
     // Constructors
-    public Comment() {
+    public Post() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -43,6 +44,14 @@ public class Comment {
         this.userId = userId;
     }
     
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
     public String getContent() {
         return content;
     }
@@ -51,28 +60,20 @@ public class Comment {
         this.content = content;
     }
     
-    public String getReferenceType() {
-        return referenceType;
+    public List<String> getMediaUrls() {
+        return mediaUrls;
     }
     
-    public void setReferenceType(String referenceType) {
-        this.referenceType = referenceType;
+    public void setMediaUrls(List<String> mediaUrls) {
+        this.mediaUrls = mediaUrls;
     }
     
-    public String getReferenceId() {
-        return referenceId;
+    public List<String> getTags() {
+        return tags;
     }
     
-    public void setReferenceId(String referenceId) {
-        this.referenceId = referenceId;
-    }
-    
-    public String getParentCommentId() {
-        return parentCommentId;
-    }
-    
-    public void setParentCommentId(String parentCommentId) {
-        this.parentCommentId = parentCommentId;
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
     
     public LocalDateTime getCreatedAt() {
@@ -99,11 +100,19 @@ public class Comment {
         this.likes = likes;
     }
     
-    public List<String> getMediaUrls() {
-        return mediaUrls;
+    public int getShares() {
+        return shares;
     }
     
-    public void setMediaUrls(List<String> mediaUrls) {
-        this.mediaUrls = mediaUrls;
+    public void setShares(int shares) {
+        this.shares = shares;
+    }
+    
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

@@ -204,7 +204,7 @@ function Navbar() {
                 ${scrolled 
                   ? 'text-gray-700 hover:text-purple-700 hover:bg-purple-50' 
                   : 'text-white hover:bg-purple-700/40 hover:backdrop-blur-sm'
-                }`} to="/planting-plans">
+                }`} to="/learning-paths">
                 <span className="flex items-center relative">
                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1.5 transition-all ${scrolled ? 'text-purple-600' : 'text-orange-300'} group-hover:translate-y-[-2px] group-hover:scale-110`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -217,7 +217,7 @@ function Navbar() {
                 ${scrolled 
                   ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-md hover:shadow-lg' 
                   : 'bg-white/20 backdrop-filter backdrop-blur-sm hover:bg-white/30 text-white shadow-sm hover:shadow-md'
-                } hover:scale-105 transform`} to="/plantingfoam">
+                } hover:scale-105 transform`} to="/create-path">
                 <span className="flex items-center relative z-10">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1.5 text-orange-300 group-hover:scale-110 transition-all duration-300 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -299,7 +299,7 @@ function Navbar() {
                           <span>Your Profile</span>
                         </Link>
                         <Link 
-                          to="/plant-progress" 
+                          to="/learning-progress" 
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 transition-colors"
                           onClick={() => setShowDropdown(false)}
                         >
@@ -368,7 +368,7 @@ function Navbar() {
             </Link>
             
             <Link 
-              to="/planting-plans"
+              to="/learning-paths"
               className="flex items-center text-purple-700 hover:bg-purple-50 block px-3 py-2 rounded-md text-base font-medium transition-all"
               onClick={() => setNavbarOpen(false)}
             >
@@ -379,7 +379,7 @@ function Navbar() {
             </Link>
             
             <Link 
-              to="/plantingfoam"
+              to="/create-path"
               className="flex items-center text-purple-700 hover:bg-purple-50 block px-3 py-2 rounded-md text-base font-medium transition-all"
               onClick={() => setNavbarOpen(false)}
             >
@@ -414,7 +414,7 @@ function Navbar() {
                   My Profile
                 </Link>
                 <Link 
-                  to="/plant-progress"
+                  to="/learning-progress"
                   className="flex items-center text-purple-700 hover:bg-purple-50 block px-3 py-2 rounded-md text-base font-medium transition-all"
                   onClick={() => setNavbarOpen(false)}
                 >

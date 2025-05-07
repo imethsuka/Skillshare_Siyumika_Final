@@ -13,7 +13,7 @@ import PostsPage from "./pages/PostsPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import "bootstrap/dist/css/bootstrap.min.css";
-import PlantingForm from "./pages/PlantingForm";
+import CreateLearningPath from "./pages/CreateLearningPath";
 import ProfileEditPage from "./pages/ProfileEditPage";
 
 function App() {
@@ -40,7 +40,7 @@ function App() {
               <Route path="/posts" element={<PostsPage />} />
               <Route path="/posts/new" element={<CreatePostPage />} />
               <Route path="/posts/:postId" element={<PostDetailPage />} />
-              <Route path="/create-path" element={<PlantingForm />} />
+              <Route path="/create-path" element={<CreateLearningPath />} />
               <Route path="/profile/edit" element={<ProfileEditPage />} />
             </Routes>
           </main>

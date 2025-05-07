@@ -8,11 +8,11 @@
 		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.agriapp</groupId>
-	<artifactId>agri-app</artifactId>
+	<groupId>com.skillshare</groupId>
+	<artifactId>skillshare-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>agri-app</name>
-	<description>Demo project for Spring Boot</description>
+	<name>skillshare-app</name>
+	<description>Skillshare learning platform application</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -79,6 +79,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.skillshare.app.SkillshareApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>

@@ -4,10 +4,9 @@ import { useAuth } from '../utils/AuthContext';
 import { FaSeedling, FaUsers, FaMedal, FaLeaf, FaSearch, FaStar, FaCertificate, FaLaptop } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
-// Import the plant.png image we know exists in the project
-import plantIcon from '../images/progress/plant.png';
-import leafIcon from '../images/progress/leaf.png';
+// Import the badge.png image we know exists in the project
 import badgeIcon from '../images/progress/badge.png';
+import leafIcon from '../images/progress/leaf.png';
 
 function HomePage() {
   const { currentUser } = useAuth();
@@ -129,7 +128,7 @@ function HomePage() {
               {/* Category background pattern */}
               <div className="absolute inset-0 bg-opacity-5 bg-purple-500 group-hover:bg-opacity-10 transition-all">
                 <div className="absolute right-0 bottom-0 transform translate-x-1/4 translate-y-1/4">
-                  <img src={plantIcon} alt="" className="w-24 h-24 opacity-10" />
+                  <img src={badgeIcon} alt="" className="w-24 h-24 opacity-10" />
                 </div>
               </div>
               

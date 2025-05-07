@@ -30,7 +30,7 @@ function Footer() {
             <h4 className="text-lg font-semibold text-white mb-5 pb-2 border-b border-purple-600">Learn</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/planting-plans" className="text-gray-300 hover:text-white text-sm transition duration-300 flex items-center">
+                <Link to="/learning-paths" className="text-gray-300 hover:text-white text-sm transition duration-300 flex items-center">
                   <span className="h-1 w-2 bg-purple-400 mr-2"></span>Learning Plans
                 </Link>
               </li>
