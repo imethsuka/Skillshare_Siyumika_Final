@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import PlantingPlanService from '../services/plantingPlanService';
+import LearningPathService from '../services/LearningPathService';
 
 const learningCategories = {
     'Programming': [
@@ -45,64 +45,64 @@ function PlantingForm() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     
-    const [plantingData, setPlantingData] = useState({
-        plantType: '',
-        datePlanted: '',
-        expectedHarvest: '',
-        steps: [{ description: '', photos: [] }]
+    const [learningData, setLearningData] = useState({
+        skillType: '',
+        dateStarted: '',
+        expectedCompletion: '',
+        steps: [{ description: '', resources: [] }]
     });
 
     useEffect(() => {
         // Redirect if not authenticated
         // if (!isAuthenticated) {
-        //     navigate('/login?redirect=plantingfoam');
+        //     navigate('/login?redirect=create-path');
         //     return;
         // }
     }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setPlantingData(prevState => ({
+        setLearningData(prevState => ({
             ...prevState,
             [name]: value
         }));
     };
 
     const handleStepChange = (index, e) => {
-        const newSteps = plantingData.steps.map((step, stepIndex) => {
+        const newSteps = learningData.steps.map((step, stepIndex) => {
             if (index === stepIndex) {
                 return { ...step, description: e.target.value };
             }
             return step;
         });
-        setPlantingData(prevState => ({
+        setLearningData(prevState => ({
             ...prevState,
             steps: newSteps
         }));
     };
 
-    const handlePhotoChange = (index, e) => {
-        const newSteps = plantingData.steps.map((step, stepIndex) => {
+    const handleResourceChange = (index, e) => {
+        const newSteps = learningData.steps.map((step, stepIndex) => {
             if (index === stepIndex) {
-                return { ...step, photos: [...step.photos, ...e.target.files] };
+                return { ...step, resources: [...step.resources, ...e.target.files] };
             }
             return step;
         });
-        setPlantingData(prevState => ({
+        setLearningData(prevState => ({
             ...prevState,
             steps: newSteps
         }));
     };
 
     const addStep = () => {
-        setPlantingData(prevState => ({
+        setLearningData(prevState => ({
             ...prevState,
-            steps: [...prevState.steps, { description: '', photos: [] }]
+            steps: [...prevState.steps, { description: '', resources: [] }]
         }));
     };
 
     const handleDeleteStep = (indexToDelete) => {
-        setPlantingData(prevState => ({
+        setLearningData(prevState => ({
             ...prevState,
             steps: prevState.steps.filter((_, index) => index !== indexToDelete)
         }));
@@ -116,33 +116,33 @@ function PlantingForm() {
         
         try {
             // Format data for API
-            const planData = {
-                title: `${plantingData.plantType} Learning Plan`,
-                description: `Learning ${plantingData.plantType} from ${plantingData.datePlanted} with expected completion on ${plantingData.expectedHarvest}`,
+            const pathData = {
+                title: `${learningData.skillType} Learning Path`,
+                description: `Learning ${learningData.skillType} from ${learningData.dateStarted} with expected completion on ${learningData.expectedCompletion}`,
                 userId: currentUser?._id || currentUser?.id,
-                milestones: plantingData.steps.map((step, index) => ({
+                milestones: learningData.steps.map((step, index) => ({
                     title: `Milestone ${index + 1}`,
                     description: step.description,
                     orderIndex: index,
                     resources: [] // Resource uploads would require a separate file upload service
                 })),
                 isPublic: true,
-                tags: [plantingData.plantType.toLowerCase(), "learning", "education"]
+                tags: [learningData.skillType.toLowerCase(), "learning", "education"]
             };
             
             // Send to backend
-            const response = await PlantingPlanService.createPlan(planData);
+            const response = await LearningPathService.createPath(pathData);
             
             setSuccess(true);
             setLoading(false);
             
-            // Navigate to the created plan details page after a short delay
+            // Navigate to the created path details page after a short delay
             setTimeout(() => {
-                navigate(`/planting-plans/${response.data._id || response.data.id}`);
+                navigate(`/learning-paths/${response.data._id || response.data.id}`);
             }, 1500);
         } catch (err) {
-            console.error("Error creating learning plan:", err);
-            setError("Failed to create learning plan. Please try again.");
+            console.error("Error creating learning path:", err);
+            setError("Failed to create learning path. Please try again.");
             setLoading(false);
         }
     };
@@ -154,15 +154,15 @@ function PlantingForm() {
                 <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
                     <div className="bg-purple-600 py-6 px-8">
                         <h1 className="text-3xl font-bold text-center text-white">
-                            🧠 Learning Journey Tracker
+                            🧠 Learning Journey Creator
                         </h1>
                     </div>
                     <div className="p-8 text-center">
                         <div className="text-8xl mb-4">🔒</div>
                         <h2 className="text-xl font-semibold mb-4">Authentication Required</h2>
-                        <p className="mb-6">You need to be logged in to create a learning plan.</p>
+                        <p className="mb-6">You need to be logged in to create a learning path.</p>
                         <div className="flex flex-col space-y-3">
-                            <Link to="/login?redirect=plantingfoam" 
+                            <Link to="/login?redirect=create-path" 
                                   className="w-full px-6 py-3 text-white text-lg font-semibold rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors">
                                 Log In
                             </Link>
@@ -185,7 +185,7 @@ function PlantingForm() {
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 rounded-full -mb-12 -ml-12 opacity-20"></div>
                     
                     <h1 className="text-3xl font-bold text-center text-white relative z-10">
-                        🧠 Learning Journey Tracker
+                        🧠 Learning Path Creator
                     </h1>
                     <p className="text-center text-purple-100 mt-2 relative z-10">
                         Map your path from beginner to mastery
@@ -200,7 +200,7 @@ function PlantingForm() {
                     {success && (
                         <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                             <strong className="font-bold">Success!</strong>
-                            <span className="block sm:inline"> Your learning plan has been created. Redirecting you to the details page...</span>
+                            <span className="block sm:inline"> Your learning path has been created. Redirecting you to the details page...</span>
                         </div>
                     )}
                     
@@ -218,8 +218,8 @@ function PlantingForm() {
                             <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">What are you learning?</label>
                                 <select
-                                    name="plantType"
-                                    value={plantingData.plantType}
+                                    name="skillType"
+                                    value={learningData.skillType}
                                     onChange={handleChange}
                                     className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                                     required
@@ -242,8 +242,8 @@ function PlantingForm() {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
                                 <input
                                     type="date"
-                                    name="datePlanted"
-                                    value={plantingData.datePlanted}
+                                    name="dateStarted"
+                                    value={learningData.dateStarted}
                                     onChange={handleChange}
                                     className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                                     required
@@ -264,7 +264,7 @@ function PlantingForm() {
                             
                             <p className="text-gray-600 mb-4">Break down your learning journey into achievable milestones.</p>
                             
-                            {plantingData.steps.map((step, index) => (
+                            {learningData.steps.map((step, index) => (
                                 <div
                                     key={index}
                                     className="bg-purple-50 p-6 rounded-lg mb-4 relative border border-purple-100"
@@ -276,7 +276,7 @@ function PlantingForm() {
                                             </span>
                                             Milestone {index + 1}
                                         </label>
-                                        {plantingData.steps.length > 1 && (
+                                        {learningData.steps.length > 1 && (
                                             <button 
                                                 type="button"
                                                 onClick={() => handleDeleteStep(index)}
@@ -302,7 +302,7 @@ function PlantingForm() {
                                         </label>
                                         <input
                                             type="file"
-                                            onChange={(e) => handlePhotoChange(index, e)}
+                                            onChange={(e) => handleResourceChange(index, e)}
                                             className="w-full"
                                             multiple
                                             disabled={loading}
@@ -328,8 +328,8 @@ function PlantingForm() {
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Target Completion Date</label>
                             <input
                                 type="date"
-                                name="expectedHarvest"
-                                value={plantingData.expectedHarvest}
+                                name="expectedCompletion"
+                                value={learningData.expectedCompletion}
                                 onChange={handleChange}
                                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                                 required
@@ -347,7 +347,7 @@ function PlantingForm() {
                             {loading ? (
                                 <>
                                     <span className="mr-2">⏳</span>
-                                    Creating Your Learning Plan...
+                                    Creating Your Learning Path...
                                 </>
                             ) : (
                                 <>🚀 Create Learning Journey</>

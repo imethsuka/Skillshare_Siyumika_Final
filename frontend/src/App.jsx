@@ -7,9 +7,8 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
-import PlantingPlanExplorer from "./pages/PlantingPlanExplorer";
-import PlantingPlanDetail from "./pages/PlantingPlanDetail";
-import PlantProgressDetailPage from "./pages/PlantProgressDetailPage";
+import LearningPathExplorer from "./pages/LearningPathExplorer";
+import LearningPathDetail from "./pages/LearningPathDetail";
 import PostsPage from "./pages/PostsPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import CreatePostPage from "./pages/CreatePostPage";
@@ -31,21 +30,17 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/:username" element={<ProfilePage />} />
               <Route
-                path="/planting-plans"
-                element={<PlantingPlanExplorer />}
+                path="/learning-paths"
+                element={<LearningPathExplorer />}
               />
               <Route
-                path="/planting-plans/:planId"
-                element={<PlantingPlanDetail />}
-              />
-              <Route
-                path="/plant-progress/:progressId"
-                element={<PlantProgressDetailPage />}
+                path="/learning-paths/:pathId"
+                element={<LearningPathDetail />}
               />
               <Route path="/posts" element={<PostsPage />} />
               <Route path="/posts/new" element={<CreatePostPage />} />
               <Route path="/posts/:postId" element={<PostDetailPage />} />
-              <Route path="/plantingfoam" element={<PlantingForm />} />
+              <Route path="/create-path" element={<PlantingForm />} />
               <Route path="/profile/edit" element={<ProfileEditPage />} />
             </Routes>
           </main>

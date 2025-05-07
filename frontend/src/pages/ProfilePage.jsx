@@ -3,19 +3,19 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import UserService from "../services/userService";
-import PlantProgressService from "../services/plantProgressService";
-import PostService from "../services/postService"; // Import PostService
+import LearningProgressService from "../services/LearningProgressService";
+import PostService from "../services/postService";
 
 function ProfilePage() {
   const { username } = useParams();
   const { currentUser, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState(null);
-  const [plantProgress, setPlantProgress] = useState([]);
+  const [learningProgress, setLearningProgress] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("progress");
-  const [isOwnProfile, setIsOwnProfile] = useState(false); // Add this to determine if the user is viewing their own profile
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -60,20 +60,19 @@ function ProfilePage() {
         const profileResponse = await UserService.getUserProfile(userId);
         setProfile(profileResponse.data);
 
-        // Fetch user's plant progress
+        // Fetch user's learning progress
         try {
-          const progressResponse = await PlantProgressService.getUserProgress(
+          const progressResponse = await LearningProgressService.getUserProgress(
             userId
           );
-          setPlantProgress(progressResponse.data);
+          setLearningProgress(progressResponse.data);
         } catch (progressErr) {
-          console.warn("Could not load plant progress:", progressErr);
+          console.warn("Could not load learning progress:", progressErr);
           // Continue without progress rather than failing completely
         }
 
-        // Fetch user's posts using PostService instead of UserService
+        // Fetch user's posts using PostService
         try {
-          // Use PostService's getUserPosts method instead
           const postsResponse = await PostService.getUserPosts(userId);
           setPosts(postsResponse.data);
         } catch (postErr) {
@@ -205,7 +204,7 @@ function ProfilePage() {
                     }`}
                     onClick={() => setActiveTab("progress")}
                   >
-                    Plant Progress
+                    Learning Progress
                   </button>
                 </li>
                 <li className="nav-item">
@@ -223,18 +222,18 @@ function ProfilePage() {
             <div className="card-body">
               {activeTab === "progress" && (
                 <div>
-                  <h4>Plant Progress</h4>
-                  {plantProgress.length > 0 ? (
+                  <h4>Learning Progress</h4>
+                  {learningProgress.length > 0 ? (
                     <div className="list-group">
-                      {plantProgress.map((progress) => (
+                      {learningProgress.map((progress) => (
                         <Link
                           key={progress._id}
-                          to={`/plant-progress/${progress._id}`}
+                          to={`/learning-progress/${progress._id}`}
                           className="list-group-item list-group-item-action"
                         >
                           <div className="d-flex w-100 justify-content-between">
                             <h5 className="mb-1">
-                              {progress.plantingPlan.title}
+                              {progress.learningPath.title}
                             </h5>
                             <small>
                               {new Date(
@@ -258,7 +257,7 @@ function ProfilePage() {
                           </div>
                           <p className="mb-1">
                             Completed {progress.completedMilestones.length} of{" "}
-                            {progress.plantingPlan.milestones.length} milestones
+                            {progress.learningPath.milestones.length} milestones
                           </p>
                         </Link>
                       ))}
@@ -266,11 +265,11 @@ function ProfilePage() {
                   ) : (
                     <div className="text-center py-4">
                       <p className="text-muted mb-3">
-                        No plant progress tracked yet
+                        No learning progress tracked yet
                       </p>
                       {isOwnProfile && (
-                        <Link to="/planting-plans" className="btn btn-primary">
-                          Start a Planting Plan
+                        <Link to="/learning-paths" className="btn btn-primary">
+                          Start a Learning Path
                         </Link>
                       )}
                     </div>
