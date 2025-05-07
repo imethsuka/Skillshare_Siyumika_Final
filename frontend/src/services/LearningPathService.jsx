@@ -17,13 +17,13 @@ const LearningPathService = {
   },
 
   // Update a learning path (admin only)
-  updatePath: (pathId, pathData) => {
-    return api.put(`/paths/${pathId}`, pathData);
+  updatePath: (pathId, pathData, userId) => {
+    return api.put(`/paths/${pathId}?userId=${userId}`, pathData);
   },
 
-  // Delete a learning path (admin only)
-  deletePath: (pathId) => {
-    return api.delete(`/paths/${pathId}`);
+  // Delete a learning path with authorization
+  deletePath: (pathId, userId) => {
+    return api.delete(`/paths/${pathId}?userId=${userId}`);
   },
 
   // Get paths by category

@@ -344,7 +344,7 @@ function LearningPathDetail() {
             </button>
           </div>
           
-          {isAuthenticated && currentUser?.role === "admin" && (
+          {isAuthenticated && (currentUser?._id === path.userId || currentUser?.id === path.userId) && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex flex-col sm:flex-row gap-2">
                 <Link 
@@ -357,9 +357,15 @@ function LearningPathDetail() {
                   className="flex-1 bg-red-600 text-white py-2 px-4 rounded font-medium hover:bg-red-700 transition-colors"
                   onClick={() => {
                     if (window.confirm("Are you sure you want to delete this learning path?")) {
-                      LearningPathService.deletePath(pathId)
-                        .then(() => navigate("/learning-paths"))
-                        .catch(err => console.error("Failed to delete path:", err));
+                      const userId = currentUser?._id || currentUser?.id;
+                      LearningPathService.deletePath(pathId, userId)
+                        .then(() => {
+                          navigate("/learning-paths");
+                        })
+                        .catch(err => {
+                          console.error("Failed to delete path:", err);
+                          alert(err.response?.data?.message || "You don't have permission to delete this learning path.");
+                        });
                     }
                   }}
                 >

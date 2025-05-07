@@ -15,6 +15,7 @@ import PostDetailPage from "./pages/PostDetailPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CreateLearningPath from "./pages/CreateLearningPath";
+import EditLearningPath from "./pages/EditLearningPath";
 import ProfileEditPage from "./pages/ProfileEditPage";
 import LearningPathProgressDetail from "./pages/LearningPathProgressDetail";
 
@@ -38,6 +39,10 @@ function App() {
               <Route
                 path="/learning-paths/:pathId"
                 element={<LearningPathDetail />}
+              />
+              <Route
+                path="/learning-paths/:pathId/edit"
+                element={<EditLearningPath />}
               />
               <Route path="/posts" element={<PostsPage />} />
               <Route path="/posts/new" element={<CreatePostPage />} />

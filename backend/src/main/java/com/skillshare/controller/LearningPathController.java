@@ -5,8 +5,10 @@ import com.skillshare.service.LearningPathService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/paths")
@@ -57,13 +59,37 @@ public class LearningPathController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LearningPath> updatePath(@PathVariable String id, @RequestBody LearningPath path) {
+    public ResponseEntity<LearningPath> updatePath(@PathVariable String id, @RequestBody LearningPath path, @RequestParam String userId) {
+        // Check if user is the creator of the path
+        Optional<LearningPath> existingPath = learningPathService.getPathById(id);
+        
+        if (existingPath.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        // Verify that the user is the creator of the learning path
+        if (!existingPath.get().getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to update this learning path");
+        }
+        
         path.setId(id);
         return new ResponseEntity<>(learningPathService.updatePath(path), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePath(@PathVariable String id) {
+    public ResponseEntity<Void> deletePath(@PathVariable String id, @RequestParam String userId) {
+        // Check if user is the creator of the path
+        Optional<LearningPath> existingPath = learningPathService.getPathById(id);
+        
+        if (existingPath.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        // Verify that the user is the creator of the learning path
+        if (!existingPath.get().getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to delete this learning path");
+        }
+        
         learningPathService.deletePath(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
