@@ -17,4 +17,10 @@ public interface PostService {
     void deletePost(String id);
     void likePost(String id);
     void sharePost(String id);
+    
+    // Comment related methods
+    Optional<Post> addCommentToPost(String postId, Post.Comment comment);
+    Optional<Post.Comment> updateCommentInPost(String postId, String commentId, String userId, String content);
+    boolean removeCommentFromPost(String postId, String commentId, String userId);
+    boolean likeCommentInPost(String postId, String commentId);
 }

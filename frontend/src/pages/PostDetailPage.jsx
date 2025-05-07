@@ -13,6 +13,8 @@ function PostDetailPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState("");
 
   useEffect(() => {
     // If no postId is provided, redirect to posts listing
@@ -91,18 +93,18 @@ function PostDetailPage() {
 
     try {
       setIsSubmitting(true);
-      // Send the comment with reference to the post
+      // Send the comment with reference to the post and user
+      const userId = currentUser._id || currentUser.id;
       const response = await PostService.addComment(postId, { 
         content: comment,
-        // Include author information if needed by your backend
-        authorId: currentUser._id || currentUser.id
+        userId: userId
       });
       
       // Add author information to the comment for UI display
       const newComment = {
         ...response.data,
         author: {
-          _id: currentUser._id || currentUser.id,
+          _id: userId,
           username: currentUser.username,
           profileImage: currentUser.profileImage
         },
@@ -124,13 +126,57 @@ function PostDetailPage() {
     }
   };
 
+  const handleEditComment = (commentId, currentContent) => {
+    setEditingCommentId(commentId);
+    setEditCommentContent(currentContent);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditCommentContent("");
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editCommentContent.trim()) return;
+    
+    try {
+      setIsSubmitting(true);
+      
+      const userId = currentUser._id || currentUser.id;
+      // Call the update API with postId, commentId, userId and new content
+      const response = await PostService.updateComment(
+        postId, 
+        commentId, 
+        userId, 
+        { content: editCommentContent }
+      );
+      
+      console.log("Comment update response:", response);
+      
+      // Reset editing state immediately for better UX
+      setEditingCommentId(null);
+      setEditCommentContent("");
+      
+      // Fetch the entire post again to ensure we have the latest data
+      await fetchPost();
+      
+    } catch (err) {
+      console.error("Failed to update comment:", err);
+      alert("Failed to update comment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDeleteComment = async (commentId) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
 
     try {
-      await PostService.deleteComment(postId, commentId);
+      const userId = currentUser._id || currentUser.id;
+      // Delete comment using postId, commentId and userId
+      await PostService.deleteComment(postId, commentId, userId);
       
-      // Update post in the state to remove the deleted comment
+      // Update UI to remove the deleted comment
       setPost(prevPost => ({
         ...prevPost,
         comments: (prevPost.comments || []).filter(c => c._id !== commentId)
@@ -144,7 +190,7 @@ function PostDetailPage() {
   // Check if user is author with proper null checks to prevent errors
   const isAuthor = isAuthenticated && currentUser && post && 
     (post.author || post.userId) && (
-      (post.author && (currentUser._id === post.author._id || currentUser.id === post.author._id)) ||
+      (post.author && (currentUser._id === post.author._id || currentUser.id === post.author.id)) ||
       (post.userId && (currentUser._id === post.userId || currentUser.id === post.userId))
     );
   
@@ -451,15 +497,54 @@ function PostDetailPage() {
                         (currentUser.id === comment.author.id) || 
                         isAuthor
                       )) && (
-                        <button 
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteComment(comment._id)}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
+                        <div className="btn-group">
+                          {((currentUser._id === comment.author._id) || 
+                            (currentUser.id === comment.author.id)) && (
+                            <button 
+                              className="btn btn-sm btn-outline-primary me-1"
+                              onClick={() => handleEditComment(comment._id, comment.content)}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                          )}
+                          <button 
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDeleteComment(comment._id)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </div>
                       )}
                     </div>
-                    <p className="card-text">{comment.content}</p>
+                    
+                    {editingCommentId === comment._id ? (
+                      <div className="mt-2">
+                        <textarea
+                          className="form-control mb-2"
+                          rows="3"
+                          value={editCommentContent}
+                          onChange={(e) => setEditCommentContent(e.target.value)}
+                          required
+                        ></textarea>
+                        <div className="d-flex gap-2">
+                          <button 
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleUpdateComment(comment._id)}
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? "Saving..." : "Save"}
+                          </button>
+                          <button 
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={handleCancelEdit}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="card-text">{comment.content}</p>
+                    )}
                   </div>
                 </div>
               ))}

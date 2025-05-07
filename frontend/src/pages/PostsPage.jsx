@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import PostService from "../services/postService";
-import CommentService from "../services/commentService";
 
 function PostsPage() {
   const navigate = useNavigate();
@@ -44,22 +43,15 @@ function PostsPage() {
       }
 
       console.log("Fetched posts response:", response.data);
+      
+      // Process the posts to ensure consistent _id property
+      const processedPosts = response.data.map(post => ({
+        ...post,
+        _id: post._id || post.id,
+        comments: post.comments || []
+      }));
 
-      // Fetch comments for each post
-      const postsWithComments = await Promise.all(
-        response.data.map(async (post) => {
-          const commentsResponse = await CommentService.getCommentsByReference("POST", post._id || post.id);
-          return {
-            ...post,
-            _id: post._id || post.id,
-            comments: commentsResponse.data || [],
-          };
-        })
-      );
-
-      console.log("Posts with comments:", postsWithComments);
-
-      setPosts(postsWithComments);
+      setPosts(processedPosts);
       setLoading(false);
     } catch (err) {
       setError("Failed to load posts");
@@ -143,7 +135,7 @@ function PostsPage() {
       };
       
       console.log("Comment data:", commentData);
-      const newComment = await CommentService.addComment(postId, commentData);
+      const newComment = await PostService.addComment(postId, commentData);
       
       console.log("New comment response:", newComment);
       
@@ -190,12 +182,15 @@ function PostsPage() {
 
     try {
       console.log("Updating comment:", commentId, "with text:", editingText);
-      const updatedComment = await CommentService.updateComment(commentId, {
+      const userId = currentUser._id || currentUser.id;
+      // Use the new PostService method with postId, commentId and userId
+      const updatedComment = await PostService.updateComment(postId, commentId, userId, {
         content: editingText
       });
       
       console.log("Comment updated:", updatedComment);
       
+      // Update the UI immediately
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
@@ -247,10 +242,11 @@ function PostsPage() {
         
       console.log("Comment to delete:", commentToDelete);
       
-      const response = await CommentService.deleteComment(commentId);
-      console.log("Delete comment response:", response);
+      const userId = currentUser._id || currentUser.id;
+      // Use the new PostService method for deleting embedded comments
+      await PostService.deleteComment(postId, commentId, userId);
       
-      // First update local state for immediate UI feedback
+      // Immediately update local state for better UX
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
@@ -262,9 +258,9 @@ function PostsPage() {
         )
       );
       
-      // Then refresh data from server to ensure all clients have the same data
+      // Then refresh data from server to ensure all clients have the latest data
       console.log("Comment deleted, refreshing posts from server...");
-      await fetchPosts(); // Fetch fresh data from the server
+      await fetchPosts();
       
     } catch (err) {
       console.error("Failed to delete comment:", err);
@@ -291,7 +287,8 @@ function PostsPage() {
 
     // Check if current user is the author
     const isAuthor = currentUser && post.author && 
-      (currentUser._id === post.author._id || currentUser.id === post.author._id);
+      (currentUser._id === post.author._id || currentUser.id === post.author.id ||
+       (post.userId && (currentUser._id === post.userId || currentUser.id === post.userId)));
 
     if (!isAuthor) {
       alert("You can only delete your own posts");
@@ -542,8 +539,9 @@ function PostsPage() {
                   <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-700 transition-colors">{post.title}</h2>
                   
                   {/* Post Management Buttons */}
-                  {isAuthenticated && currentUser && post.author && 
-                   (currentUser._id === post.author._id || currentUser.id === post.author._id) && (
+                  {isAuthenticated && currentUser && 
+                   ((post.author && (currentUser._id === post.author._id || currentUser.id === post.author.id)) || 
+                   (post.userId && (currentUser._id === post.userId || currentUser.id === post.userId))) && (
                     <div className="flex gap-2 mb-4">
                       <button
                         className="flex items-center text-xs px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-all hover:shadow-md"

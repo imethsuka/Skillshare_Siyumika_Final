@@ -6,8 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -113,5 +116,85 @@ public class PostController {
     public ResponseEntity<Void> sharePost(@PathVariable String id) {
         postService.sharePost(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // Comment endpoints
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Post.Comment> addComment(
+            @PathVariable String postId,
+            @RequestBody Post.Comment comment,
+            @RequestParam String userId) {
+        
+        // Validation
+        if (comment.getContent() == null || comment.getContent().trim().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Set metadata for the comment
+        comment.setId(UUID.randomUUID().toString());
+        comment.setUserId(userId);
+        comment.setCreatedAt(LocalDateTime.now());
+        comment.setUpdatedAt(LocalDateTime.now());
+        
+        Optional<Post> postOpt = postService.addCommentToPost(postId, comment);
+        
+        if (postOpt.isPresent()) {
+            return new ResponseEntity<>(comment, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @PutMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Post.Comment> updateComment(
+            @PathVariable String postId, 
+            @PathVariable String commentId,
+            @RequestBody Map<String, String> payload,
+            @RequestParam String userId) {
+        
+        String content = payload.get("content");
+        
+        // Validation
+        if (content == null || content.trim().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        Optional<Post.Comment> updatedCommentOpt = postService.updateCommentInPost(postId, commentId, userId, content);
+        
+        if (updatedCommentOpt.isPresent()) {
+            return new ResponseEntity<>(updatedCommentOpt.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable String postId, 
+            @PathVariable String commentId,
+            @RequestParam String userId) {
+        
+        boolean deleted = postService.removeCommentFromPost(postId, commentId, userId);
+        
+        if (deleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    // Optionally: Like a comment
+    @PostMapping("/{postId}/comments/{commentId}/like")
+    public ResponseEntity<Void> likeComment(
+            @PathVariable String postId, 
+            @PathVariable String commentId) {
+        
+        boolean liked = postService.likeCommentInPost(postId, commentId);
+        
+        if (liked) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

@@ -66,19 +66,26 @@ const PostService = {
 
   // Add a comment to a post
   addComment: (postId, commentData) => {
-    // Make sure we're sending the right format for your backend
-    return api.post(`/comments`, {
-      content: commentData.content,
-      referenceType: "POST",
-      referenceId: postId,
-      authorId: commentData.authorId
+    return api.post(`/posts/${postId}/comments?userId=${commentData.authorId || commentData.userId}`, {
+      content: commentData.content
+    });
+  },
+
+  // Update a comment
+  updateComment: (postId, commentId, userId, commentData) => {
+    return api.put(`/posts/${postId}/comments/${commentId}?userId=${userId}`, {
+      content: commentData.content
     });
   },
 
   // Delete a comment
-  deleteComment: (postId, commentId) => {
-    // Use the comments endpoint directly
-    return api.delete(`/comments/${commentId}`);
+  deleteComment: (postId, commentId, userId) => {
+    return api.delete(`/posts/${postId}/comments/${commentId}?userId=${userId}`);
+  },
+
+  // Like a comment
+  likeComment: (postId, commentId) => {
+    return api.post(`/posts/${postId}/comments/${commentId}/like`);
   },
 
   // Search posts by keyword
