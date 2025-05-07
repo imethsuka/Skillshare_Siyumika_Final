@@ -1,0 +1,90 @@
+/* Standard Button Styles */
+
+/* Primary buttons */
+.btn-primary,
+.btn-success,
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.bg-blue-600,
+.bg-green-600,
+.bg-emerald-600,
+.bg-purple-600,
+.bg-orange-500,
+.hover\:bg-blue-700:hover,
+.hover\:bg-green-700:hover,
+.hover\:bg-emerald-700:hover,
+.hover\:bg-purple-700:hover,
+.hover\:bg-orange-600:hover,
+button.bg-gradient-to-r,
+.from-blue-600,
+.to-indigo-700,
+.from-purple-500,
+.to-purple-600,
+.hover\:from-purple-600:hover,
+.hover\:to-purple-700:hover {
+  background-color: #9333ea !important; /* Purple-600 */
+  border-color: #9333ea !important;
+  color: white !important;
+}
+
+/* Secondary/outline buttons */
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-secondary,
+.text-blue-700,
+.text-green-700,
+.text-emerald-700,
+.text-purple-700 {
+  border-color: #9333ea !important;
+  color: #9333ea !important;
+  background-color: transparent !important;
+}
+
+/* Danger/outline-danger buttons */
+.btn-danger,
+.btn-outline-danger:hover,
+.bg-red-600,
+.hover\:bg-red-700:hover {
+  background-color: #dc2626 !important; /* Red-600 */
+  border-color: #dc2626 !important;
+  color: white !important;
+}
+
+.btn-outline-danger {
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+  background-color: transparent !important;
+}
+
+/* Filtering and tag buttons - active state */
+button[class*="active"],
+button[class*="selected"],
+.bg-emerald-600,
+.bg-blue-600,
+.bg-green-600,
+.bg-orange-600,
+.bg-purple-600 {
+  background-color: #9333ea !important;
+  color: white !important;
+}
+
+/* Links within buttons should inherit text color */
+button a,
+.btn a {
+  color: inherit !important;
+}
+
+/* Button hover effects */
+.btn:hover,
+button:hover:not([disabled]),
+.hover\:bg-purple-700:hover {
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+/* Keep disabled buttons styled appropriately */
+button:disabled,
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
