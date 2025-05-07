@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -62,13 +63,42 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable String id, @RequestBody Post post) {
+    public ResponseEntity<Post> updatePost(@PathVariable String id, @RequestBody Post post, @RequestParam(required = false) String userId) {
+        // Fetch the existing post
+        Optional<Post> existingPost = postService.getPostById(id);
+
+        // Check if post exists
+        if (existingPost.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the user is the author of the post
+        Post currentPost = existingPost.get();
+        if (userId != null && !userId.equals(currentPost.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        // Update the post
         post.setId(id);
         return new ResponseEntity<>(postService.updatePost(post), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable String id) {
+    public ResponseEntity<Void> deletePost(@PathVariable String id, @RequestParam(required = false) String userId) {
+        // Fetch the existing post
+        Optional<Post> existingPost = postService.getPostById(id);
+        
+        // Check if post exists
+        if (existingPost.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        // Check if the user is the author of the post
+        Post currentPost = existingPost.get();
+        if (userId != null && !userId.equals(currentPost.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        
         postService.deletePost(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

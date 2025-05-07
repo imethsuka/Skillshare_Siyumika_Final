@@ -282,6 +282,22 @@ function PostsPage() {
       return;
     }
 
+    // Find the post to check if user is the author
+    const post = posts.find(p => p._id === postId);
+    if (!post) {
+      alert("Post not found");
+      return;
+    }
+
+    // Check if current user is the author
+    const isAuthor = currentUser && post.author && 
+      (currentUser._id === post.author._id || currentUser.id === post.author._id);
+
+    if (!isAuthor) {
+      alert("You can only delete your own posts");
+      return;
+    }
+
     if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
       return;
     }
@@ -604,12 +620,25 @@ function PostsPage() {
                     
                     <Link 
                       to={`/posts/${post._id}`} 
-                      className="text-sm bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg transition-colors font-medium flex items-center group"
+                      className="text-sm bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center group hover:shadow-md"
                     >
-                      Read More 
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+                      {isAuthenticated && currentUser && post.author && 
+                       (currentUser._id === post.author._id || currentUser.id === post.author._id) ? (
+                        <>
+                          View & Manage Post
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </>
+                      ) : (
+                        <>
+                          Read More 
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </>
+                      )}
                     </Link>
                   </div>
 

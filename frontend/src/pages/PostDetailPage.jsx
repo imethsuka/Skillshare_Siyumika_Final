@@ -12,6 +12,7 @@ function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     // If no postId is provided, redirect to posts listing
@@ -140,8 +141,24 @@ function PostDetailPage() {
     }
   };
 
+  // Check if user is author with proper null checks to prevent errors
+  const isAuthor = isAuthenticated && currentUser && post && 
+    (post.author || post.userId) && (
+      (post.author && (currentUser._id === post.author._id || currentUser.id === post.author._id)) ||
+      (post.userId && (currentUser._id === post.userId || currentUser.id === post.userId))
+    );
+  
+  // Fix the isLiked calculation with a more robust approach
+  let isLiked = false;
+  if (isAuthenticated && currentUser && post && post.likes) {
+    const currentUserId = currentUser._id || currentUser.id;
+    isLiked = Array.isArray(post.likes) && post.likes.includes(currentUserId);
+  }
+
   const handleDeletePost = async () => {
-    if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+    // Check if the user is the author
+    if (!isAuthor) {
+      alert("You can only delete your own posts");
       return;
     }
 
@@ -153,6 +170,19 @@ function PostDetailPage() {
       console.error("Failed to delete post:", err);
       alert("Failed to delete post. Please try again.");
     }
+  };
+
+  const confirmDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+  };
+
+  const proceedWithDelete = () => {
+    setShowDeleteModal(false);
+    handleDeletePost();
   };
 
   if (loading) {
@@ -177,18 +207,29 @@ function PostDetailPage() {
   const likes = Array.isArray(post.likes) ? post.likes : [];
   const comments = Array.isArray(post.comments) ? post.comments : [];
 
-  const isAuthor = isAuthenticated && currentUser && post.author && 
-    (currentUser._id === post.author._id || currentUser.id === post.author.id);
-  
-  // Fix the isLiked calculation with a more robust approach
-  let isLiked = false;
-  if (isAuthenticated && currentUser && Array.isArray(likes)) {
-    const currentUserId = currentUser._id || currentUser.id;
-    isLiked = likes.includes(currentUserId);
-  }
-
   return (
     <div className="container mt-4">
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Delete Post</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={cancelDelete}></button>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={cancelDelete}>Cancel</button>
+                <button type="button" className="btn btn-danger" onClick={proceedWithDelete}>Delete Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
           <li className="breadcrumb-item">
@@ -200,7 +241,29 @@ function PostDetailPage() {
         </ol>
       </nav>
 
-      <div className="card mb-4">
+      <div className="card shadow-sm border-0 mb-4">
+        {isAuthor && (
+          <div className="card-header bg-light py-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center">
+                <span className="badge bg-success me-2">Your Post</span>
+                <span className="text-muted small">You have full control over this content</span>
+              </div>
+              <div className="d-flex gap-2">
+                <Link to={`/posts/${post._id || post.id}/edit`} className="btn btn-primary">
+                  <i className="bi bi-pencil-square me-1"></i> Edit Post
+                </Link>
+                <button 
+                  className="btn btn-danger"
+                  onClick={confirmDelete}
+                >
+                  <i className="bi bi-trash me-1"></i> Delete Post
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="card-body">
           <div className="d-flex align-items-center mb-4">
             {post.author ? (
@@ -246,33 +309,37 @@ function PostDetailPage() {
           <h2 className="card-title mb-3">{post.title}</h2>
           
           {post.image && (
-            <img 
-              src={post.image} 
-              alt={post.title} 
-              className="img-fluid rounded mb-4" 
-              style={{ maxHeight: "500px", objectFit: "contain" }} 
-            />
+            <div className="post-image-container mb-4">
+              <img 
+                src={post.image} 
+                alt={post.title} 
+                className="img-fluid rounded shadow-sm" 
+                style={{ maxHeight: "500px", objectFit: "contain", width: "100%" }} 
+              />
+            </div>
           )}
           
-          {/* Render content paragraphs */}
-          {post.content.split('\n').map((paragraph, index) => (
-            <p key={index} className="card-text lead">
-              {paragraph}
-            </p>
-          ))}
+          <div className="post-content mb-4">
+            {post.content.split('\n').map((paragraph, index) => (
+              <p key={index} className="card-text lead">
+                {paragraph}
+              </p>
+            ))}
+          </div>
           
           {post.tags && post.tags.length > 0 && (
-            <div className="mb-4">
+            <div className="post-tags mb-4">
               {post.tags.map((tag, index) => (
-                <span key={index} className="badge bg-light text-dark me-2">
-                  #{tag}
+                <span key={index} className="badge bg-light text-dark me-2 p-2">
+                  <i className="bi bi-tag me-1"></i>
+                  {tag}
                 </span>
               ))}
             </div>
           )}
           
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <div>
+          <div className="post-actions d-flex justify-content-between align-items-center mt-4 pt-4 border-top">
+            <div className="d-flex gap-3">
               <button 
                 className={`btn ${isLiked ? "btn-danger" : "btn-outline-danger"}`}
                 onClick={handleLike}
@@ -283,37 +350,30 @@ function PostDetailPage() {
               </button>
               
               <button 
-                className="btn btn-outline-primary ms-2"
+                className="btn btn-outline-primary"
                 onClick={() => document.getElementById('commentInput').focus()}
               >
                 <i className="bi bi-chat-fill me-1"></i>
                 {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
               </button>
-              <button className="btn btn-sm btn-link" onClick={() => window.scrollTo(0, 0)}>
+            </div>
+            
+            <div className="d-flex align-items-center">
+              <button className="btn btn-sm btn-link text-muted" onClick={() => window.scrollTo(0, 0)}>
+                <i className="bi bi-arrow-up me-1"></i>
                 Back to Top
               </button>
             </div>
-            
-            {isAuthor && (
-              <div>
-                <Link to={`/posts/${post._id || post.id}/edit`} className="btn btn-outline-secondary me-2">
-                  Edit
-                </Link>
-                <button 
-                  className="btn btn-outline-danger"
-                  onClick={handleDeletePost}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      <div className="card mb-4">
-        <div className="card-header">
-          <h4 className="mb-0">Comments ({comments.length})</h4>
+      <div className="card shadow-sm border-0 mb-4">
+        <div className="card-header bg-light">
+          <h4 className="mb-0">
+            <i className="bi bi-chat-quote me-2"></i>
+            Comments ({comments.length})
+          </h4>
         </div>
         <div className="card-body">
           {isAuthenticated ? (
