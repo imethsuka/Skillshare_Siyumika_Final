@@ -1,10 +1,10 @@
-package com.agriapp.agri_app;
+package com.skillshare.app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AgriAppApplicationTests {
+class SkillshareApplicationTests {
 
 	@Test
 	void contextLoads() {
