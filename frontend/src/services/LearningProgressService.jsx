@@ -22,9 +22,10 @@ const LearningProgressService = {
   },
   
   // Start tracking progress for a path
-  startProgress: (pathId) => {
+  startProgress: (pathId, userId) => {
     return api.post("/progress", {
       learningPathId: pathId,
+      userId: userId,
       startedAt: new Date().toISOString()
     });
   },
@@ -35,6 +36,11 @@ const LearningProgressService = {
       milestoneId: milestoneId,
       completedAt: new Date().toISOString()
     });
+  },
+
+  // Uncomplete a milestone (remove from completed list)
+  uncompleteMilestone: (progressId, milestoneId) => {
+    return api.delete(`/progress/${progressId}/milestones/${milestoneId}`);
   },
 
   // Update notes

@@ -209,7 +209,7 @@ function Navbar() {
                   <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1.5 transition-all ${scrolled ? 'text-purple-600' : 'text-orange-300'} group-hover:translate-y-[-2px] group-hover:scale-110`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
-                  <span>Learning Plans</span>
+                  <span>Learning Paths</span>
                   <span className={`absolute -bottom-1 left-0 h-0.5 w-0 ${scrolled ? 'bg-purple-500' : 'bg-orange-300'} group-hover:w-full transition-all duration-300`}></span>
                 </span>
               </Link>
@@ -222,7 +222,7 @@ function Navbar() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1.5 text-orange-300 group-hover:scale-110 transition-all duration-300 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Track New Learning Plan</span>
+                  <span>Create New Learning Path</span>
                 </span>
                 {/* Enhanced decorative animated glow effect */}
                 <span className="absolute inset-0 rounded-md bg-white/10 blur opacity-0 group-hover:opacity-100 transition-all duration-300"></span>

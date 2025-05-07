@@ -9,12 +9,14 @@ import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import LearningPathExplorer from "./pages/LearningPathExplorer";
 import LearningPathDetail from "./pages/LearningPathDetail";
+import LearningProgressPage from "./pages/LearningProgressPage";
 import PostsPage from "./pages/PostsPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CreateLearningPath from "./pages/CreateLearningPath";
 import ProfileEditPage from "./pages/ProfileEditPage";
+import LearningPathProgressDetail from "./pages/LearningPathProgressDetail";
 
 function App() {
   return (
@@ -42,6 +44,14 @@ function App() {
               <Route path="/posts/:postId" element={<PostDetailPage />} />
               <Route path="/create-path" element={<CreateLearningPath />} />
               <Route path="/profile/edit" element={<ProfileEditPage />} />
+              <Route
+                path="/learning-progress"
+                element={<LearningProgressPage />}
+              />
+              <Route
+                path="/learning-progress/:progressId"
+                element={<LearningPathProgressDetail />}
+              />
             </Routes>
           </main>
           <Footer />

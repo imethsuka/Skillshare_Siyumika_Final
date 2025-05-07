@@ -135,7 +135,7 @@ function CreatePostPage() {
                     name="tags"
                     value={formData.tags}
                     onChange={handleChange}
-                    placeholder="tomatoes, beginners, organic"
+                    placeholder="Beginner, Intermidiate, Advanced"
                   />
                   <small className="text-muted">
                     Enter comma-separated tags to help others find your post.

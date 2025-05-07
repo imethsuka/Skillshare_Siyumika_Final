@@ -37,6 +37,7 @@ public class LearningPathServiceImpl implements LearningPathService {
 
     @Override
     public Optional<LearningPath> getPathById(String id) {
+        System.out.println(learningPathRepository.findById(id).get().getTitle());
         return learningPathRepository.findById(id);
     }
 
